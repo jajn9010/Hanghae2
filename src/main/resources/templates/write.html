@@ -141,12 +141,6 @@
             color: #ffffff;
         }
 
-        .btn-light {
-            position: absolute;
-            top: 120px;
-            right: 48px;
-        }
-
         textarea.field {
             width: 502px !important;
             height: 146px;
@@ -325,8 +319,9 @@
 
             $.ajax({
                 type: 'GET',
-                url: '/api/blogs',
+                url: '/api/blogs/write',
                 success: function (response) {
+                    console.log(response);
                     for(let i=0; i<response.length; i++) {
                         let blog = response[i];
                         let id = blog.id;
@@ -375,6 +370,43 @@
             // 2. #cards-box 에 HTML을 붙인다.
             $('#cards-box').append(temp_html);
         }
+
+        // 메모를 생성합니다.
+        function writePost() {
+            // 1. 작성한 메모를 불러옵니다.
+            let contents = $('#contents').val();
+            // 2. 작성한 메모가 올바른지 isValidContents 함수를 통해 확인합니다.
+            if (isValidContents(contents) === false) {
+                return;
+            }
+            // 3. username 가져오기.
+            // 4. 전달할 data JSON으로 만듭니다.
+            let data = {'contents': contents};
+            // 5. POST /api/blogs 에 data를 전달합니다.
+            $.ajax({
+                type: "POST",
+                url: "/api/blogs/write",
+                contentType: "application/json", // JSON 형식으로 전달함을 알리기
+                data: JSON.stringify(data),
+                success: function (response) {
+                    alert('메시지가 성공적으로 작성되었습니다.');
+                    window.location.reload();
+                }
+            });
+        }
+
+        // 메모를 수정합니다.
+        function submitEdit(id) {
+            // 1. 작성 대상 메모의 username과 contents 를 확인합니다.
+            // 2. 작성한 메모가 올바른지 isValidContents 함수를 통해 확인합니다.
+            // 3. 전달할 data JSON으로 만듭니다.
+            // 4. PUT /api/blogs/{id} 에 data를 전달합니다.
+        }
+
+        // 메모를 삭제합니다.
+        function deleteOne(id) {
+            // 1. DELETE /api/blogs/{id} 에 요청해서 메모를 삭제합니다.
+        }
     </script>
 </head>
 
@@ -387,18 +419,19 @@
 </div>
 <div class="wrap">
     <div class="header">
-        <p><a class="login" href="/user/login">로그인</a><a class="signup" href="/user/signup">회원가입</a></p>
         <h2>쓰고싶은 말을 작성해보세요!</h2>
-        <div class="header-title-login-user" id="header-title-login-user">
-            <span th:text="${username}"></span>님 안녕하세요
-        </div>
         <p>
             사람들과 공유하고 싶은 내용을 입력해주세요.
         </p>
         <form id="my_form" method="post" action="/user/logout">
             <a id="logout-text" href="javascript:{}" onclick="document.getElementById('my_form').submit();">로그아웃</a>
         </form>
-        <p><button id="write_button" type="button" class="btn btn-light" onclick="location.href='/api/blogs/write'">글쓰기</button></p>
+    </div>
+    <div class="area-write">
+        <textarea class="field" placeholder="사람들과 공유하고 싶은 내용을 입력해주세요." name="contents" id="contents" cols="30"
+                  rows="10"></textarea>
+        <!--            <button class="btn btn-danger" onclick="writePost()">작성하기</button>-->
+        <img src="/images/send.png" alt="" onclick="writePost()">
     </div>
     <div id="cards-box" class="area-read">
         <div class="card">
