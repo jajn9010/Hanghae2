@@ -8,6 +8,7 @@ import com.sparta.expert_mission.service.BlogService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -38,16 +39,13 @@ public class BlogController {
         return blogRepository.save(blog);
     }
 
-    @PutMapping("/api/blogs/{id}")
-    public Long updateBlog(@PathVariable Long id, @RequestBody BlogRequestDto requestDto) {
-        blogService.update(id, requestDto);
-        return id;
-    }
-
-    @DeleteMapping("/api/blogs/{id}")
-    public Long deleteBlog(@PathVariable Long id) {
-        blogRepository.deleteById(id);
-        return id;
-    }
-
+    @GetMapping("/api/blogs/{id}")
+    public String getOne(@PathVariable Long id, Model model, @AuthenticationPrincipal UserDetailsImpl userDetails) {
+        Blog blog = blogRepository.findById(id).orElseThrow(
+                ()-> new IllegalArgumentException("게시글이 존재하지 않습니다.")
+        );
+        model.addAttribute("username", userDetails.getUsername());
+        model.addAttribute("blog", blog);
+        return "detail";
+    };
 }

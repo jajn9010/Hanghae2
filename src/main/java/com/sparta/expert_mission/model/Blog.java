@@ -15,17 +15,24 @@ public class Blog extends Timestamped { // 생성,수정 시간을 자동으로 
     private Long id;
 
     @Column(nullable = false)
+    private String title;
+
+    @Column(nullable = false)
     private String username;
 
     @Column(nullable = false)
     private String contents;
 
+
+
     public Blog(BlogRequestDto requestDto) {
+        this.title = requestDto.getTitle();
         this.username = requestDto.getUsername();
         this.contents = requestDto.getContents();
     }
 
     public void update(BlogRequestDto requestDto) {
+        this.title = requestDto.getTitle();
         this.username = requestDto.getUsername();
         this.contents = requestDto.getContents();
     }

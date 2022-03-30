@@ -7,6 +7,7 @@ import lombok.Setter;
 @Setter
 public class BlogRequestDto {
     private Long userId;
+    private String title;
     private String username;
     private String contents;
 }

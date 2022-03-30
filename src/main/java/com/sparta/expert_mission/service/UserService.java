@@ -2,19 +2,21 @@ package com.sparta.expert_mission.service;
 
 import com.sparta.expert_mission.dto.SignupRequestDto;
 import com.sparta.expert_mission.model.User;
-import com.sparta.expert_mission.model.UserRoleEnum;
 import com.sparta.expert_mission.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.validation.Errors;
+import org.springframework.validation.FieldError;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Optional;
 
 @Service
 public class UserService {
     private final PasswordEncoder passwordEncoder;
     private final UserRepository userRepository;
-    private static final String ADMIN_TOKEN = "AAABnv/xRVklrnYxKZ0aHgTBcXukeZygoC";
 
     @Autowired
     public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder) {
@@ -34,16 +36,17 @@ public class UserService {
         String password = passwordEncoder.encode(requestDto.getPassword());
         String email = requestDto.getEmail();
 
-        // 사용자 ROLE 확인
-        UserRoleEnum role = UserRoleEnum.USER;
-        if (requestDto.isAdmin()) {
-            if (!requestDto.getAdminToken().equals(ADMIN_TOKEN)) {
-                throw new IllegalArgumentException("관리자 암호가 틀려 등록이 불가능합니다.");
-            }
-            role = UserRoleEnum.ADMIN;
-        }
-
-        User user = new User(username, password, email, role);
+        User user = new User(username, password, email);
         userRepository.save(user);
+    }
+
+    public Map<String, String> validateHandling(Errors errors) {
+        Map<String, String> validResult = new HashMap<>();
+        //유효성 검사 실패한 필드 목록 받음
+        for (FieldError error : errors.getFieldErrors()) {
+            String validKeyName = String.format("valid_%s", error.getField());
+            validResult.put(validKeyName, error.getDefaultMessage());
+        }
+        return validResult;
     }
 }
