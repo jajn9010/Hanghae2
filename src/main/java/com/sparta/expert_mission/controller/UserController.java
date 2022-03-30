@@ -43,16 +43,24 @@ public class UserController {
     // 회원 가입 요청 처리
     @PostMapping("/user/signup")
     public String registerUser(@ModelAttribute @Valid SignupRequestDto requestDto, Errors errors, Model model) {
+        System.out.println(requestDto.getPassword());
         if (errors.hasErrors()) {
             // 유효성 통과 못한 필드와 메세지를 핸들링함
             Map<String, String> validResult = userService.validateHandling(errors);
             for (String key : validResult.keySet()) {
                 model.addAttribute(key, validResult.get(key));
+                System.out.println(key);
+                System.out.println(validResult.get(key));
             }
             return "signup";
         }
-
-        userService.registerUser(requestDto);
+//        try {
+//            userService.registerUser(requestDto);
+//        } catch (IllegalArgumentException e) {
+//            System.out.println(e);
+//            model.addAttribute("error", e.getMessage());
+//            return "signup";
+//        }
         return "redirect:/user/login";
     }
 
