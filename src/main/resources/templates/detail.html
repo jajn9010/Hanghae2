@@ -198,22 +198,7 @@
         // 메모 하나를 HTML로 만들어서 body 태그 내 원하는 곳에 붙입니다.
         function addHTML(id, title, contents, modifiedAt, username) {
             // 1. HTML 태그를 만듭니다.
-            let temp_html = `<div id="cards-box${id}" class="area-read">
-                                <div class="card">
-                                    <!-- date/username 영역 -->
-                                    <div class="metadata">
-                                        <div class="date">
-                                            ${modifiedAt}
-                                        </div>
-                                        <div id="${id}-username" class="username">
-                                            ${username}
-                                        </div>
-                                        <div id="${id}-title" class="title">
-                                            ${title}
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>`
+            let temp_html = ``
             // 2. #cards-box 에 HTML을 붙인다.
             $('#cards-box').append(temp_html);
         }
@@ -229,18 +214,13 @@
 </div>
 <div class="wrap">
     <div class="header">
-        <p><a class="login" href="/user/login">로그인</a><a class="signup" href="/user/signup">회원가입</a></p>
-        <h2>쓰고싶은 말을 작성해보세요!</h2>
+        <h2>게시글 조회</h2>
         <div class="header-title-login-user" id="header-title-login-user">
             <span th:text="${username}"></span>님 안녕하세요
         </div>
-        <p>
-            사람들과 공유하고 싶은 내용을 입력해주세요.
-        </p>
         <form id="my_form" method="post" action="/user/logout">
             <a id="logout-text" href="javascript:{}" onclick="document.getElementById('my_form').submit();">로그아웃</a>
         </form>
-        <p><button id="write_button" type="button" class="btn btn-light" onclick="location.href='/api/blogs/write'">글쓰기</button></p>
     </div>
     <div id="cards-box" class="area-read">
         <div class="card">

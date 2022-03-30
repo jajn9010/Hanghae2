@@ -9,4 +9,5 @@ public class BlogRequestDto {
     private Long userId;
     private String username;
     private String contents;
+    private String title;
 }

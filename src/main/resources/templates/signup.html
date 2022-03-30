@@ -30,15 +30,22 @@
 <div id="login-form">
     <div id="login-title">Sign up Blog</div>
 
-    <form action="/user/signup" method="post">
+    <form class="form" action="#" method="post" novalidate="" th:action="@{/user/singup}" th:object="${requestDto}">
         <div class="login-id-label">Username</div>
-        <input type="text" name="username" placeholder="Username" class="login-input-box">
+        <input th:field="*{username}" type="text" name="username" placeholder="Username" class="login-input-box">
+        <small class="form-text text-danger" th:error="*{username}" th:if="${#fields.hasErrors('username')}">username</small>
 
         <div class="login-id-label">Password</div>
-        <input type="password" name="password" class="login-input-box">
+        <input th:field="*{password}" type="password" name="password" class="login-input-box">
+        <small class="form-text text-danger" th:error="*{password}" th:if="${#fields.hasErrors('password')}"></small>
+
+        <div class="login-id-label">Password Check</div>
+        <input th:field="*{checkpw}" type="password" name="password-check" class="login-input-box">
+        <small class="form-text text-danger" th:error="*{checkpw}" th:if="${#fields.hasErrors('checkpw')}"></small>
 
         <div class="login-id-label">E-mail</div>
-        <input type="text" name="email" placeholder="E-mail" class="login-input-box">
+        <input th:field="*{email}" type="text" name="email" placeholder="E-mail" class="login-input-box">
+        <small class="form-text text-danger" th:error="*{email}" th:if="${#fields.hasErrors('email')}"></small>
 
         <div>
             <input id="admin-check" type="checkbox" name="admin" onclick="onclickAdmin()" style="margin-top: 40px;">관리자
