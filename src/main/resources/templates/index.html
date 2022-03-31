@@ -325,7 +325,7 @@
 
             $.ajax({
                 type: 'GET',
-                url: '/api/blogs',
+                url: '/api/blogs/',
                 success: function (response) {
                     for(let i=0; i<response.length; i++) {
                         let blog = response[i];
@@ -341,8 +341,9 @@
             })
         }
 
+
         // 메모 하나를 HTML로 만들어서 body 태그 내 원하는 곳에 붙입니다.
-        function addHTML(id, title, username, contents, modifiedAt) {
+        function addHTML(id, title, contents, username, modifiedAt) {
             // 1. HTML 태그를 만듭니다.
             let temp_html = `<div id="cards-box${id}" class="area-read">
                                 <a href="/api/blogs/${id}">

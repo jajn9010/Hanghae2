@@ -154,6 +154,94 @@
             text-align: left;
             color: #868e96;
         }
+
+        .card {
+            width: 538px;
+            border-radius: 5px;
+            background-color: #ffffff;
+            margin-bottom: 12px;
+        }
+
+        .card .metadata {
+            position: relative;
+            display: flex;
+            font-family: 'Spoqa Han Sans';
+            font-size: 11px;
+            font-weight: normal;
+            font-stretch: normal;
+            font-style: normal;
+            line-height: 1;
+            letter-spacing: -0.77px;
+            text-align: left;
+            color: #adb5bd;
+            height: 14px;
+            padding: 10px 23px;
+        }
+
+        .card .metadata .date {
+
+        }
+
+        .card .metadata .username {
+            margin-left: 20px;
+        }
+
+        .contents {
+            padding: 0px 23px;
+            word-wrap: break-word;
+            word-break: break-all;
+        }
+
+        .contents div.edit {
+            display: none;
+        }
+
+        .contents textarea.te-edit {
+            border-right: none;
+            border-top: none;
+            border-left: none;
+            resize: none;
+            border-bottom: 1px solid #212529;
+            width: 100%;
+            font-family: 'Spoqa Han Sans';
+        }
+
+        .footer {
+            position: relative;
+            height: 40px;
+        }
+
+        .footer img.icon-start-edit {
+            cursor: pointer;
+            position: absolute;
+            bottom: 14px;
+            right: 55px;
+            width: 18px;
+            height: 18px;
+        }
+
+        .footer img.icon-end-edit {
+            cursor: pointer;
+            position: absolute;
+            display: none;
+            bottom: 14px;
+            right: 55px;
+            width: 20px;
+            height: 15px;
+        }
+
+        .footer img.icon-delete {
+            cursor: pointer;
+            position: absolute;
+            bottom: 12px;
+            right: 19px;
+            width: 14px;
+            height: 18px;
+        }
+
+        #cards-box {
+            margin-top: 12px;
+        }
     </style>
     <script th:inline="javascript">
         function writeComment() {
@@ -179,12 +267,93 @@
             });
         }
 
+        $(document).ready(function () {
+            // HTML 문서를 로드할 때마다 실행합니다.
+            getMessages();
+        })
+
+        // 메모를 불러와서 보여줍니다.
+        function getMessages() {
+            $('#cards-box').empty();
+            let idx = location.href.split("blogs/")[1];
+
+
+            $.ajax({
+                type: 'GET',
+                url: `/api/comment/${idx}`,
+                success: function (response) {
+                    console.log(response);
+                    for(let i=0; i<response.length; i++) {
+                        let comment = response[i];
+                        let id = comment.id;
+                        let username = comment.user;
+                        let modifiedAt = comment.modifiedAt;
+                        let contents = comment.text;
+
+                        addHTML(id, contents, username, modifiedAt);
+                    }
+                }
+            })
+        }
+
+        // 메모 하나를 HTML로 만들어서 body 태그 내 원하는 곳에 붙입니다.
+        function addHTML(id, contents, username, modifiedAt) {
+            // 1. HTML 태그를 만듭니다.
+            let temp_html = `<div id="cards-box${id}" class="area-read">
+                                    <div class="card">
+                                        <!-- date/username 영역 -->
+                                        <div class="metadata">
+                                            <div class="date">
+                                                ${modifiedAt}
+                                            </div>
+                                            <div id="${id}-username" class="username">
+                                                ${username}
+                                            </div>
+                                        </div>
+                                        <div class="contents">
+                                            <div id="${id}-contents" class="contents">
+                                                ${contents}
+                                            </div>
+                                            <div id="${id}-editarea" class="edit">
+                                                <textarea id="${id}-textarea" class="te-edit" name="" cols="30" rows="5"></textarea>
+                                            </div>
+                                        </div>
+                                       <div class="footer">
+                                            <img id="${id}-edit" onclick="editPost('${id}')" class="icon-start-edit" src="/images/edit.png" alt="">
+                                            <img id="${id}-delete" onclick="deleteOne('${id}')" class="icon-delete" src="/images/delete.png" alt="">
+                                            <img id="${id}-submit" onclick="submitEdit('${id}')" class="icon-end-edit" src="/images/done.png" alt="">
+                                        </div>
+                                    </div>
+                            </div>`
+            // 2. #cards-box 에 HTML을 붙인다.
+            $('#cards-box').append(temp_html);
+        }
+
         // 수정 버튼을 눌렀을 때, 기존 작성 내용을 textarea 에 전달합니다.
         // 숨길 버튼을 숨기고, 나타낼 버튼을 나타냅니다.
         function editPost(id) {
             showEdits(id);
             let contents = $(`#${id}-contents`).text().trim();
             $(`#${id}-textarea`).val(contents);
+        }
+
+        function submitEdit(id) {
+            let username = $(`#${id}-usernmae`).text().trim();
+            let contents = $(`#${id}-textarea`).val().trim();
+
+            let data = {'username': username, 'contents': contents};
+
+            $.ajax({
+                type: "PUT",
+                url: `/api/comment/${id}`,
+                contentType: "application/json",
+                data: JSON.stringify(data),
+                success: function (response) {
+                    console.log(response)
+                    alert('댓글 변경에 성공하셨습니다.');
+                    window.location.reload()
+                }
+            })
         }
 
         function showEdits(id) {
@@ -244,6 +413,34 @@
                   rows="10"></textarea>
         <!--            <button class="btn btn-danger" onclick="writePost()">작성하기</button>-->
         <img src="/images/send.png" alt="" onclick="writeComment()">
+    </div>
+    <div id="cards-box" class="area-read">
+        <div class="card">
+            <!-- date/username 영역 -->
+            <div class="metadata">
+                <div class="date">
+                    October 10, 2020
+                </div>
+                <div id="1-username" class="username">
+                    anonymous
+                </div>
+            </div>
+            <!-- contents 조회/수정 영역-->
+            <div class="contents">
+                <div id="1-contents" class="text">
+                    dsafnkalfklewakflekelafkleajfkleafkldsankflenwaklfnekwlafneklwanfkelawnfkelanfkleanfklew
+                </div>
+                <div id="1-editarea" class="edit">
+                    <textarea id="1-textarea" class="te-edit" name="" cols="30" rows="5"></textarea>
+                </div>
+            </div>
+            <!-- 버튼 영역-->
+            <div class="footer">
+                <img id="1-edit" onclick="editPost('1')" class="icon-start-edit" src="/images/edit.png" alt="">
+                <img id="1-delete" onclick="deleteOne('1')" class="icon-delete" src="/images/delete.png" alt="">
+                <img id="1-submit" onclick="submitEdit('1')" class="icon-end-edit" src="/images/done.png" alt="">
+            </div>
+        </div>
     </div>
 
 </div>

@@ -54,13 +54,7 @@ public class UserController {
             }
             return "signup";
         }
-//        try {
-//            userService.registerUser(requestDto);
-//        } catch (IllegalArgumentException e) {
-//            System.out.println(e);
-//            model.addAttribute("error", e.getMessage());
-//            return "signup";
-//        }
+        userService.registerUser(requestDto);
         return "redirect:/user/login";
     }
 
